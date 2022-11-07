@@ -37,14 +37,19 @@ const validWatchedAt = (req, res, next) => {
   next();
 };
 
+const validateRate = (rate) => {
+    const valid = rate < 1 || rate > 5 || !Number.isInteger(rate);
+    return valid;
+};
+
 const validRate = (req, res, next) => {
   const { rate } = req.body.talk;
-  if (!rate) {
-    return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
-  } if (rate < 1 || rate > 5 || !Number.isInteger(rate)) {
+  if (('rate' in req.body.talk) && validateRate(rate)) {
     return res.status(400).json({ message: 'O campo "rate" deve ser um inteiro de 1 à 5',
   });
-  }
+  } if (!('rate' in req.body.talk)) {
+    return res.status(400).json({ message: 'O campo "rate" é obrigatório' });
+  } 
   next();
 };
 
