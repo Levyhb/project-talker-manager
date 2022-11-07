@@ -1,6 +1,13 @@
 const express = require('express');
 
-const { readAllFiles } = require('../readFile');
+const { readAllFiles } = require('../utils');
+
+const { createNewTalker } = require('../utils');
+
+const { validToken } = require('../middleware/validToken');
+
+const { validAge, validName,
+  validTalk, validRate, validWatchedAt } = require('../middleware/validTalkers');
 
 const router = express.Router();
 
@@ -21,6 +28,13 @@ router.get('/:id', async (req, res) => {
       message: 'Pessoa palestrante não encontrada',
     });
   }
+});
+
+router.post('/', validToken,
+  validName, validAge, validTalk, validRate, validWatchedAt, async (req, res) => {
+  const talker = req.body;
+  const newTalker = await createNewTalker(talker);
+  return res.status(201).send({ ...newTalker });
 });
 
 module.exports = router;
