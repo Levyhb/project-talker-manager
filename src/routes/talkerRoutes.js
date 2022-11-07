@@ -25,7 +25,6 @@ router.get('/:id', async (req, res) => {
   const response = await readAllFiles();
   const id = Number(req.params.id);
   const talker = response.find((t) => t.id === id);
-  console.log(talker);
   if (talker) {
     res.status(200).json(talker);
   } else {
@@ -56,6 +55,21 @@ router.put('/:id', validToken, validName,
   } else {
     res.status(400);
   }
+});
+
+router.delete('/:id', validToken, async (req, res) => {
+  const talkers = await readAllFiles();
+  const id = Number(req.params.id);
+  const findTalker = talkers.find((t) => t.id === id);
+  console.log(findTalker);
+  if (findTalker) {
+    const index = talkers.indexOf(findTalker);
+    talkers.splice(index, 1);
+    await writeFile(pathFile, JSON.stringify(talkers));
+    return res.sendStatus(204);
+  }
+  console.log(findTalker);
+  return res.status(400);
 });
 
 module.exports = router;
