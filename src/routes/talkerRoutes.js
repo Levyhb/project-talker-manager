@@ -3,9 +3,7 @@ const path = require('path');
 
 const { writeFile } = require('fs/promises');
 
-const { readAllFiles } = require('../utils');
-
-const { createNewTalker } = require('../utils');
+const { readAllFiles, createNewTalker, searchTalker } = require('../utils');
 
 const { validToken } = require('../middleware/validToken');
 
@@ -19,6 +17,13 @@ const pathFile = path.resolve(__dirname, '..', 'talker.json');
 router.get('/', async (_req, res) => {
   const response = await readAllFiles();
   return res.status(200).json(response);
+});
+
+router.get('/search', validToken, async (req, res) => {
+  const { q } = req.query;
+  const resultSearch = await searchTalker(q);
+  console.log(q);
+  return res.status(200).json(resultSearch);
 });
 
 router.get('/:id', async (req, res) => {
@@ -61,14 +66,12 @@ router.delete('/:id', validToken, async (req, res) => {
   const talkers = await readAllFiles();
   const id = Number(req.params.id);
   const findTalker = talkers.find((t) => t.id === id);
-  console.log(findTalker);
   if (findTalker) {
     const index = talkers.indexOf(findTalker);
     talkers.splice(index, 1);
     await writeFile(pathFile, JSON.stringify(talkers));
     return res.sendStatus(204);
   }
-  console.log(findTalker);
   return res.status(400);
 });
 

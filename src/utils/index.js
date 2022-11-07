@@ -28,7 +28,18 @@ const createNewTalker = async (newTalker) => {
   return addNewTalker;
 };
 
+const searchTalker = async (search) => {
+  const talkers = await readAllFiles();
+  if (search) {
+    const resultOfSearch = await talkers.filter((talker) => talker.name.toLowerCase()
+      .includes(search.toLowerCase()));
+  return resultOfSearch;
+  } 
+  return talkers;
+};
+
 module.exports = { 
   readAllFiles,
   createNewTalker,
+  searchTalker,
 };
